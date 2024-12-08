@@ -1,0 +1,53 @@
+<!-- templates/search.html -->
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Songs</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='search_style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+<body>
+    <header>
+        <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="BeatFlow Logo" class="logo">
+            </a>
+        <h1>BeatFlow</h1>
+        <div class="auth-buttons">
+            {% if username %}
+            <span>{{ username }}님</span>
+            <button onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+            {% else %}
+            <button onclick="window.location.href='{{ url_for('login') }}'">Login</button>
+            <button onclick="window.location.href='{{ url_for('signup') }}'">Sign Up</button>
+            {% endif %}
+        </div>
+    </header>
+    <h1>노래 검색</h1>
+
+    <form method="GET" action="{{ url_for('search') }}">
+        <input type="text" name="query" placeholder="노래 제목, 아티스트 검색..." required>
+        <button type="submit">검색</button>
+    </form>
+
+    <div class="song-list">
+        {% if results %}
+            <h2>검색 결과:</h2>
+            {% for song in results %}
+                <div class="song">
+                    <h3>{{ song.title }} by {{ song.artist }}</h3>
+                    <a href="{{ url_for('play_song', song_id=song.id) }}">Play</a>
+                </div>
+            {% endfor %}
+        {% else %}
+            <p>검색된 노래가 없습니다.</p>
+        {% endif %}
+    </div>
+
+    <div class="footer">
+        <p>&copy; 2024 Music Streaming Service. All rights reserved.</p>
+    </div>
+
+</body>
+</html>

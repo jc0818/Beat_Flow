@@ -1,0 +1,112 @@
+body {
+    font-family: Arial, sans-serif;
+    background-color: #121212;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column; /* 상하 배치를 위해 flex-direction을 column으로 설정 */
+    height: 100vh;
+}
+
+h1 {
+    text-align: center;
+    color: #333;
+    margin-bottom: 30px;
+    position: absolute; /* 제목을 상단으로 고정 */
+    top: 0px;
+    width: 100%;
+    text-shadow: 1px 1px 0px #FFFFFF, /* 오른쪽 아래 */
+                 -1px 1px 0px #FFFFFF, /* 왼쪽 아래 */
+                 1px -1px 0px #FFFFFF, /* 오른쪽 위 */
+                 -1px -1px 0px #FFFFFF; /* 왼쪽 위 */
+}
+
+form {
+    background-color: #fff;
+    padding: 30px;
+    border-radius: 10px;
+    box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+    width: 100%;
+    max-width: 400px;
+    margin: 0 auto;
+}
+
+form div {
+    margin-bottom: 5px;
+}
+
+label {
+    display: block;
+    margin-bottom: 8px;
+    font-weight: bold;
+    color: #555;
+}
+
+input[type="text"] {
+    width: 100%;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+}
+
+button {
+    width: 100%;
+    padding: 10px;
+    background-color: #4CAF50;
+    color: #fff;
+    border: none;
+    border-radius: 5px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #45a049;
+}
+
+a {
+    display: block;
+    text-align: center;
+    margin-top: 15px;
+    color: #4CAF50;
+    text-decoration: none;
+    position: relative;
+    top: 20px; /* 폼 아래에서 약간 떨어지도록 조정 */
+}
+
+a:hover {
+    text-decoration: underline;
+}
+
+/* Flash message styles */
+.flash-messages {
+    margin: 20px 0;
+    text-align: center;
+}
+
+.flash-messages .alert {
+    padding: 15px;
+    margin-bottom: 15px;
+    border-radius: 5px;
+    font-weight: bold;
+    color: #fff;
+    max-width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+.flash-messages .alert.success {
+    background-color: #4CAF50;
+}
+
+.flash-messages .alert.error {
+    background-color: #f44336;
+}
+
+.flash-messages .alert.warning {
+    background-color: #ff9800;
+}

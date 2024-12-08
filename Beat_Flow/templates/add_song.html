@@ -1,0 +1,56 @@
+<!-- templates/add_song.html -->
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Add New Song</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+    <link rel="stylesheet" href="{{ url_for('static', filename='addsongstyle.css') }}">
+</head>
+
+<body>
+
+    {% if admin_only %}
+    <script>
+        alert('이 기능은 관리자만 사용할 수 있습니다.');
+        window.location.href = "{{ url_for('home') }}"; 
+        alert('이 기능은 관리자만 사용할 수 있습니다.');
+    </script>
+    {% endif %}
+
+    <h1>새로운 노래 추가</h1>
+    {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+    <ul class="flashes">
+        {% for category, message in messages %}
+        <li class="{{ category }}">{{ message }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+    {% endwith %}
+    {% block content %}{% endblock %}
+
+    <!-- 노래 추가 폼 -->
+    <form method="POST" action="{{ url_for('add_song') }}">
+        <div>
+            <label for="title">노래 제목:</label>
+            <input type="text" id="title" name="title" required>
+        </div>
+        <div>
+            <label for="artist">아티스트:</label>
+            <input type="text" id="artist" name="artist" required>
+        </div>
+        <div>
+            <label for="filename">파일 이름:</label>
+            <input type="text" id="filename" name="filename" required>
+        </div>
+        <button type="submit">추가하기</button>
+    </form>
+
+    <a href="{{ url_for('home') }}">홈으로 돌아가기</a>
+
+</body>
+
+</html>

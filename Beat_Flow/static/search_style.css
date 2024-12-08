@@ -1,0 +1,125 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap');
+
+body {
+    font-family: 'Poppins', sans-serif;
+    margin: 0;
+    padding: 0;
+    background-color: #121212;
+    color: white;
+}
+
+header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px;
+    background-color: #1a1a1a;
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+}
+
+.logo {
+    height: 50px; /* 로고의 높이 설정 */
+    margin-right: 15px; /* 제목과의 간격 설정 */
+}
+
+h1 {
+    margin: 0;
+    font-size: 2.5em;
+}
+
+.auth-buttons {
+    margin-top: 10px;
+}
+
+.auth-buttons button {
+    margin-left: 10px;
+    padding: 10px 20px;
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.auth-buttons button:hover {
+    background-color: #005bb5;
+}
+
+h2 {
+    margin-top: 20px;
+    font-size: 1.8em;
+}
+
+form {
+    margin: 20px 0;
+    display: flex;
+    justify-content: center;
+}
+
+form input[type="text"] {
+    padding: 10px;
+    border: 1px solid #444;
+    border-radius: 5px;
+    margin-right: 10px;
+    background-color: #1a1a1a;
+    color: white;
+    flex-grow: 1; /* 남은 공간을 채우도록 설정 */
+}
+
+form input[type="text"]:focus {
+    border-color: #0071e3;
+    outline: none;
+}
+
+form button {
+    padding: 10px 15px;
+    background-color: #0071e3;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+form button:hover {
+    background-color: #005bb5;
+}
+
+.song-list {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    margin-top: 20px;
+}
+
+.song {
+    padding: 15px;
+    background-color: #3a3a3a;
+    border-radius: 10px;
+    text-align: center;
+    width: 80%; /* 폭을 80%로 설정 */
+    margin-bottom: 15px; /* 각 노래 간의 간격 설정 */
+    transition: transform 0.3s;
+}
+
+.song:hover {
+    transform: scale(1.05);
+}
+
+.song a {
+    color: #0071e3;
+    text-decoration: none;
+}
+
+.song a:hover {
+    text-decoration: underline;
+}
+h3{
+    color: #005bb5;
+}
+.footer {
+    margin-top: 20px;
+    text-align: center;
+    color: #777;
+}

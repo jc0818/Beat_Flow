@@ -1,0 +1,52 @@
+<!-- templates/base.html C -->
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}BeatFlow{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='style.css') }}">
+</head>
+
+<body>
+    <header>
+        <a href="{{ url_for('home') }}">
+                <img src="{{ url_for('static', filename='images/logo.png') }}" alt="BeatFlow Logo" class="logo">
+            </a>
+        <h1>BeatFlow</h1>
+        <div class="auth-buttons">
+            {% if username %}
+            <span>{{ username }}님</span>
+            <button onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+            {% else %}
+            <button onclick="window.location.href='{{ url_for('login') }}'">Login</button>
+            <button onclick="window.location.href='{{ url_for('signup') }}'">Sign Up</button>
+            {% endif %}
+        </div>
+    </header>
+    <div class="container">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+        <ul class="flashes">
+            {% for category, message in messages %}
+            <li class="{{ category }}">{{ message }}</li>
+            {% endfor %}
+        </ul>
+        {% endif %}
+        {% endwith %}
+        {% block content %}{% endblock %}
+    </div>
+    <!-- {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="flash-messages">
+                {% for message in messages %}
+                    <div class="alert">{{ message }}</div>
+                {% endfor %}
+                </div>
+            {% endif %}
+            {% endwith %}
+        -->
+
+</body>
+</html>

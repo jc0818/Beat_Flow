@@ -1,0 +1,328 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Music Streaming Main</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='indexStyle.css') }}">
+</head>
+
+<body>
+
+    <header>
+        <a href="{{ url_for('home') }}">
+            <img src="{{ url_for('static', filename='images/logo.png') }}" alt="BeatFlow Logo" class="logo">
+        </a>
+        <h1>BeatFlow</h1>
+        <div class="auth-buttons">
+            {% if username %}
+            <span>{{ username }}님</span>
+            <button onclick="window.location.href='{{ url_for('logout') }}'">Logout</button>
+            {% else %}
+            <button onclick="window.location.href='{{ url_for('login') }}'">Login</button>
+            <button onclick="window.location.href='{{ url_for('signup') }}'">Sign Up</button>
+            {% endif %}
+        </div>
+    </header>
+
+    <div class="container">
+        <!-- Search bar -->
+        <div class="search-bar">
+            <form method="GET" action="{{ url_for('search') }}">
+                <input type="text" name="query" placeholder="무슨 노래를 듣고 싶으신가요?" required>
+                <button type="submit">Search</button>
+            </form>
+        </div>
+
+        <!-- Song list -->
+        <div class="song-list"></div>
+
+        <!-- Music player -->
+        <div class="player" id="music-player">
+            <p>Now Playing: <strong id="now-playing-title"></strong> by <strong id="now-playing-artist"></strong></p>
+            <div class="custom-audio-player">
+                <button id="play-btn">▶️ Play</button>
+                <button id="next-btn">▶️ Next</button>
+                <button id="prev-btn">◀️ Previous</button>
+                <input type="range" id="seek-bar" value="0" max="100">
+                <span id="current-time">0:00</span> / <span id="duration">0:00</span>
+                <input type="range" id="volume-control" value="100" min="0" max="100">
+            </div>
+            <audio id="audio-player" onended="nextPlay();">
+                <source id="audio-source" src="" type="audio/mp3">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+
+        <div class="footer">
+            <p>&copy; 2024 Music Streaming Service. All rights reserved.</p>
+        </div>
+    </div>
+
+    <script>
+        const audioPlayer = document.getElementById('audio-player');
+        const playBtn = document.getElementById('play-btn');
+        const nextBtn = document.getElementById('next-btn'); // 다음 곡 버튼
+        const prevBtn = document.getElementById('prev-btn'); // 이전 곡 버튼
+        const seekBar = document.getElementById('seek-bar');
+        const currentTime = document.getElementById('current-time');
+        const duration = document.getElementById('duration');
+        const volumeControl = document.getElementById('volume-control');
+
+        let songIndex = 0;
+
+        // 노래 목록
+        const songs = [
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/41053/4105386.jpg",
+                title: "Super sonic",
+                artist: "Fromis_9",
+                mp3: "/static/music/SuperSonic.mp3"
+            },
+            {
+                image: "https://i.namu.wiki/i/J10eoDwVqMGEREmDrdYU8olintOoiPZfmSRyvN6eGktnj1ixHj-B0dqp7_EjaRScfU2KfYYfaTsNen7isI7kug.webp",
+                title: "별 별 별(See That?)",
+                artist: "NMIXX",
+                mp3: "/static/music/SeeThat.mp3"
+            },
+            {
+                image: "https://www.akbobada.com/home/akbobada/archive/akbo/img/202407191603014.jpg",
+                title: "처음 본 순간(사랑의 하츄핑 OST)",
+                artist: "aespa 윈터",
+                mp3: "/static/music/love_hachuping.mp3"
+            },
+            {
+                image: "https://m.cn.sound-wave.co.kr/web/product/big/202312/9e14ac1bc01b626f704a8739e38092e0.jpg",
+                title: "잭팟 (Jackpot)",
+                artist: "블락비 (Block B)",
+                mp3: "/static/music/Jackpot.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/200/203449/20344912.jpg?version=20221130004443.0",
+                title: "Dynamite (다이너마이트)",
+                artist: "BTS",
+                mp3: "/static/music/Dynamite.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/41068/4106839.jpg",
+                title: "마루는 강쥐 X 오해원",
+                artist: "오해원 (NMIXX)",
+                mp3: "/static/music/마루는 강쥐.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/41006/4100640.jpg",
+                title: "MAESTRO (마에스트로)",
+                artist: "세븐틴 (SEVENTEEN)",
+                mp3: "/static/music/MAESTRO.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/80291/8029146.jpg",
+                title: "다시 만난 세계",
+                artist: "소녀시대 (GIRLS' GENERATION)",
+                mp3: "/static/music/다시 만난 세계.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/4778/477881.jpg",
+                title: "유리구슬",
+                artist: "여자친구 (GFRIEND)",
+                mp3: "/static/music/유리구슬.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/200/40780/4078016.jpg?version=20221014011218.0",
+                title: "뉴진스",
+                artist: "뉴진스 (New Jeans)",
+                mp3: "/static/music/New Jeans.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/204570/20457046.jpg",
+                title: "Feel my Rhythm",
+                artist: "레드벨벳 (Red Velvet)",
+                mp3: "/static/music/Feel My Rhythm.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/41006/4100623.jpg",
+                title: "해야 (Heya)",
+                artist: "IVE (아이브)",
+                mp3: "/static/music/해야.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/200/40889/4088910.jpg?version=20230801024117.0",
+                title: "이브, 프시케 그리고 푸른 수염의 아내",
+                artist: "르세라핌 (LE SSERAFIM)",
+                mp3: "/static/music/이브, 프시케 그리고 푸른 수염의 아내.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/350/40996/4099653.jpg",
+                title: "고민중독",
+                artist: "QWER",
+                mp3: "/static/music/고민중독.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/200639/20063947.jpg",
+                title: "불장난",
+                artist: "BLACKPINK (블랙핑크)",
+                mp3: "/static/music/불장난.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/201395/20139509.jpg",
+                title: "뿜뿜",
+                artist: "모모랜드 (MOMOLAND)",
+                mp3: "/static/music/뿜뿜.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/350/154325/15432584.jpg",
+                title: "Dun Dun Dance(던 던 댄스)",
+                artist: "오마이걸 (OH MY GIRL)",
+                mp3: "/static/music/던 던 댄스.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/5315/531551.jpg",
+                title: "Ah-Choo (아츄)",
+                artist: "Lovelyz (러블리즈)",
+                mp3: "/static/music/아츄.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/200778/20077876.jpg",
+                title: "소나기",
+                artist: "아이오아이(I.O.I)",
+                mp3: "/static/music/소나기.mp3"
+            },
+            {
+                image: "https://image.bugsm.co.kr/album/images/500/206352/20635260.jpg",
+                title: "소나기 (선재업고튀어 OST)",
+                artist: "이클립스 (ECLIPSE)",
+                mp3: "/static/music/소나기 [선재 업고 튀어 OST].mp3"
+            },
+        ];
+
+        // 재생 버튼 클릭 시
+        playBtn.addEventListener('click', function () {
+            if (audioPlayer.paused) {
+                audioPlayer.play();
+                playBtn.textContent = '⏸️ Pause';
+            } else {
+                audioPlayer.pause();
+                playBtn.textContent = '▶️ Play';
+            }
+        });
+
+        // 다음 곡 재생
+        function nextPlay() {
+            songIndex++;
+            if (songIndex >= songs.length) {
+                songIndex = 0; // 처음으로 돌아가기
+            }
+            playSong(songs[songIndex].mp3, songs[songIndex].title, songs[songIndex].artist);
+        }
+
+        function playSong(src, title, artist) {
+            const audioSource = document.getElementById('audio-source');
+            audioSource.src = src;
+            audioPlayer.load();
+            audioPlayer.play();
+            document.getElementById('now-playing-title').textContent = title;
+            document.getElementById('now-playing-artist').textContent = artist;
+            document.getElementById('music-player').style.display = 'block'; // 플레이어 표시
+
+            {% if not username %}
+            alert("1분 미리 듣기입니다.");
+
+            const checkInterval = setInterval(() => {
+                if (audioPlayer.currentTime >= 60) {
+                    audioPlayer.pause();
+                    alert("로그인 이후 이용해주세요.");
+                    audioPlayer.currentTime = 0; // 플레이어 시간 초기화
+                    document.getElementById('music-player').style.display = 'none'; // 플레이어 숨기기
+                    clearInterval(checkInterval); // 체크 중지
+                }
+            }, 10); // 0.01초마다 currentTime 체크
+            {% endif %}
+        }
+
+        nextBtn.addEventListener('click', function () {
+            songIndex++;
+            if (songIndex >= songs.length) {
+                songIndex = 0; // 처음으로 돌아가기
+            }
+            playSong(songs[songIndex].mp3, songs[songIndex].title, songs[songIndex].artist);
+        });
+
+        // 이전 곡 재생
+        prevBtn.addEventListener('click', function () {
+            songIndex--;
+            if (songIndex < 0) {
+                songIndex = songs.length - 1; // 마지막 곡으로 돌아가기
+            }
+            playSong(songs[songIndex].mp3, songs[songIndex].title, songs[songIndex].artist);
+        });
+
+        // 오디오 시간 업데이트 시
+        audioPlayer.addEventListener('loadedmetadata', function () {
+            duration.textContent = formatTime(audioPlayer.duration);
+        });
+
+        audioPlayer.addEventListener('timeupdate', function () {
+            seekBar.value = (audioPlayer.currentTime / audioPlayer.duration) * 100;
+            currentTime.textContent = formatTime(audioPlayer.currentTime);
+        });
+
+        // 슬라이더 조작 시
+        seekBar.addEventListener('input', function () {
+            const seekTime = (seekBar.value / 100) * audioPlayer.duration;
+            audioPlayer.currentTime = seekTime;
+        });
+
+        // 볼륨 조절 슬라이더 조작 시
+        volumeControl.addEventListener('input', function () {
+            audioPlayer.volume = this.value / 100; // 0.0에서 1.0으로 변환
+        });
+
+        // 시간을 포맷하는 함수
+        function formatTime(seconds) {
+            const minutes = Math.floor(seconds / 60);
+            const secs = Math.floor(seconds % 60);
+            return `${minutes}:${secs < 10 ? '0' + secs : secs}`;
+        }
+
+        // 페이지가 로드될 때 첫 노래 목록 로드
+        window.onload = function () {
+            updateSongs();
+            playSong(songs[songIndex].mp3, songs[songIndex].title, songs[songIndex].artist); // 첫 곡 재생
+        };
+
+
+
+        function updateSongs() {
+            const songList = document.querySelector('.song-list');
+            songList.innerHTML = '';
+
+            // 4개의 노래를 무작위로 선택하여 추가
+            const randomSongs = getRandomSongs(4); // 예시로 4곡만 추가
+            randomSongs.forEach(song => {
+                const songDiv = document.createElement('div');
+                songDiv.classList.add('song');
+                songDiv.innerHTML = `
+                    <img src="${song.image}" alt="${song.title}">
+                    <h3>${song.title}</h3>
+                    <p>${song.artist}</p>
+                `;
+
+                // 클릭 이벤트 리스너 추가
+                songDiv.onclick = () => playSong(song.mp3, song.title, song.artist);
+
+                songList.appendChild(songDiv);
+            });
+        }
+
+        function getRandomSongs(num) {
+            const shuffled = songs.sort(() => 0.5 - Math.random());
+            return shuffled.slice(0, num);
+        }
+
+        // 페이지가 로드될 때 노래 목록 업데이트
+        window.onload = updateSongs;
+    </script>
+</body>
+
+</html>
