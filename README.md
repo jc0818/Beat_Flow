@@ -14,7 +14,7 @@
 - **템플릿 엔진**: Jinja2  
 - **보안**: 비밀번호 해싱(werkzeug)  
 
-##스크린샷 📸
+## 스크린샷 📸
 ![스크린샷 2024-12-03 152313](https://github.com/user-attachments/assets/afb0f4dd-91e4-482d-a259-0abe2f32dc84)
 ![스크린샷 2024-12-03 152323](https://github.com/user-attachments/assets/141ed752-a60f-4397-8b6f-65e3e8ad4db2)
 ![스크린샷 2024-12-03 152357](https://github.com/user-attachments/assets/d70ef125-fd8c-4141-952f-0a974ffcda23)
