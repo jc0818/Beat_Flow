@@ -4,8 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 
 
 app = Flask(__name__)
-app.secret_key = '64Ko7Zic7KeE'
-
 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///:memory:'  # 메모리 기반 기본 데이터베이스 설정
 app.config['SQLALCHEMY_BINDS'] = {
